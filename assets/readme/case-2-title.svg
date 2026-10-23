@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="72" viewBox="0 0 960 72" role="img" aria-labelledby="title">
+  <title id="title">案例 2｜爆文复刻：输入链接 → 生成图文</title>
+  <rect width="960" height="72" rx="12" fill="#f5f3ff"/>
+  <rect x="20" y="18" width="92" height="36" rx="8" fill="#7c3aed"/>
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-weight="700">
+    <text x="66" y="42" fill="#ffffff" font-size="18" text-anchor="middle">案例 2</text>
+    <text x="132" y="44" fill="#7c3aed" font-size="24">爆文复刻：输入链接 → 生成图文</text>
+  </g>
+</svg>

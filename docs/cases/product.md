@@ -1,6 +1,6 @@
-# 商品图文：输入主题，关联商品，生成带货图文
+# <img src="../../assets/readme/case-3-title.svg" alt="案例 3｜商品图文：输入主题＋关联商品 → 生成带货图文" width="960">
 
-[返回首页](../../README.md#案例三商品图文输入主题关联商品生成带货图文)
+[返回首页](../../README.md#case-product)
 
 ## 输入主题
 

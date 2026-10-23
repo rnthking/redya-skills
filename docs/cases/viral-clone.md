@@ -1,6 +1,6 @@
-# 爆文复刻：输入链接，把一周花茶图文改写成茉莉花茶图文
+# <img src="../../assets/readme/case-2-title.svg" alt="案例 2｜爆文复刻：输入链接 → 生成图文" width="960">
 
-[返回首页](../../README.md#案例二爆文复刻输入链接生成图文)
+[返回首页](../../README.md#case-clone)
 
 ## 1. 原文是什么
 
