@@ -1,4 +1,7 @@
-## 红鸦AI ( redya-skill )<br>输入主题、图文、文章、视频，一键转成小红书图文
+<h2 align="center">
+  <img src="assets/readme/redya-skill-title.svg" alt="红鸦AI-skill" width="240" height="48"><br>
+  输入主题、图文、文章、视频，一键转成小红书图文
+</h2>
 
 输入主题，或粘贴图文、文章、视频链接，自动生成**发布标题、正文和整套图片**。
 
