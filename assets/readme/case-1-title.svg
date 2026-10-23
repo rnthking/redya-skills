@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="72" viewBox="0 0 960 72" role="img" aria-labelledby="title">
+  <title id="title">案例 1｜普通图文：输入主题 → 生成图文</title>
+  <rect width="960" height="72" rx="12" fill="#eff6ff"/>
+  <rect x="20" y="18" width="92" height="36" rx="8" fill="#2563eb"/>
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" font-weight="700">
+    <text x="66" y="42" fill="#ffffff" font-size="18" text-anchor="middle">案例 1</text>
+    <text x="132" y="44" fill="#2563eb" font-size="24">普通图文：输入主题 → 生成图文</text>
+  </g>
+</svg>

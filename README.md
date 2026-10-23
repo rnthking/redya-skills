@@ -1,118 +1,305 @@
-<div align="center">
+<h2 align="center">
+  <img src="assets/readme/redya-skill-title.svg" alt="红鸦AI-skill" width="240" height="48"><br>
+  输入主题、图文、文章、视频，一键转成小红书图文
+</h2>
 
-# 🦞 红鸦 Skills · 让你的 AI 一句话写出小红书爆款图文
+输入主题，或粘贴图文、文章、视频链接，自动生成**发布标题、正文和整套图片**。
 
-**给 Claude Code / Codex / Cursor 装上这个 Skill，对着 AI 说一句话，
-自动产出小红书「标题 + 正文 + 9 张配图」——文案有「人味儿」、配图风格统一、直接能发。**
+包括 3 种创作模式：**通用图文创作、爆款图文复刻、商品带货图文**，支持关联知识库、商品档案库。
 
-[![官网](https://img.shields.io/badge/官网-hy.ithinkai.cn-ff2442?style=for-the-badge)](https://hy.ithinkai.cn)
-[![免费试用](https://img.shields.io/badge/🎁_注册即领-免费试用积分-brightgreen?style=for-the-badge)](https://hy.ithinkai.cn)
+## 生成步骤
 
-### 👉 [**打开 hy.ithinkai.cn，注册即领免费试用积分，先免费生成几篇试试**](https://hy.ithinkai.cn) 👈
+1. **生成文案与大纲**：先生成标题、正文、大纲和每页配图大纲，内容可修改。
+2. **批量生成图片**：根据确认后的大纲，批量生成整套图片。
+3. **一键发布**：支持**小红书、抖音、公众号、知乎等多平台**。
 
-</div>
+通过发布插件，将文案和图片自动填入你浏览器里的平台发布页面。你可以预览、修改，最后亲自点击发布。
+
+也支持在 **Codex、Claude Code、WorkBuddy** 等 AI Agent 中通过 Skill 调用。
+
+<p align="center">
+  <a href="#三种创作方式从输入到成品"><strong>查看案例</strong></a> ｜
+  <a href="https://hy.ithinkai.cn"><strong>在线体验</strong></a> ｜
+  <a href="#安装-skill"><strong>安装 Skill</strong></a>
+</p>
+
+[![红鸦主页：主题输入、链接解析、创作模式和精选案例](assets/readme/redya-home.png)](https://hy.ithinkai.cn)
+
+## 三种创作方式，从输入到成品
+
+| 普通图文 | 爆文复刻 | 商品图文 |
+| --- | --- | --- |
+| **输入主题 → 生成图文** | **输入链接 → 生成图文** | **输入主题 → 关联商品 → 生成带货图文** |
+| 攻略、知识分享、教程、内容推广 | 逐页参考热门笔记，按自己的要求重新创作 | 结合商品资料、卖点和真实素材做内容 |
+| [看普通图文案例 ↓](#case-normal) | [看爆文复刻案例 ↓](#case-clone) | [看商品图文案例 ↓](#case-product) |
+
+以下案例展示红鸦网页端的实际创作流程。通过 Agent 使用的方式见后面的 [Skill、MCP 与 OpenAPI](#在-agent-中使用红鸦) 介绍。
+
+<br>
+
+<a id="case-normal"></a>
+<a id="案例一普通图文输入主题生成图文"></a>
+<h3><img src="assets/readme/case-1-title.svg" alt="案例 1｜普通图文：输入主题 → 生成图文" width="960"></h3>
+
+**① 输入主题**
+
+普通图文可以从一个主题开始，例如：
+
+> 生成广州2日游攻略，包含两日游玩路线、美食清单和实用建议。
+
+下面是带参考链接的实际输入截图；图中选择的是「爆文复刻」，填写的要求为「参考原图风格，生成广州2日游攻略」。
+
+![输入截图：解析参考链接并填写广州2日游主题](assets/readme/normal-reference-input.png)
+
+<br>
+
+**② 生成文案与图片**
+
+下面用这篇广州攻略展示生成结果：发布标题、正文，以及封面、两日路线和美食介绍，共 6 张配图。
+
+![广州2日游攻略的发布标题和完整正文](assets/readme/normal-copy.png)
+
+![广州攻略的6张配图：封面、两日路线、早茶粤菜、西关小吃和宵夜](assets/readme/normal-results.png)
+
+**[查看完整案例：输入、文案、6张图片与浏览器发布 →](docs/cases/normal.md)**
+
+<br>
 
 ---
 
-## 为什么值得一试？
+<a id="case-clone"></a>
+<a id="案例二爆文复刻输入链接生成图文"></a>
+<h3><img src="assets/readme/case-2-title.svg" alt="案例 2｜爆文复刻：输入链接 → 生成图文" width="960"></h3>
 
-小红书运营最累的是什么？**不是没灵感，是「一篇要配 6-9 张风格统一的图」这件事，手工做太慢。**
+**① 解析链接，填写改写要求**
 
-红鸦把这件事自动化了，而且是**深耕小红书**打磨出来的，不是通用 AI 套壳：
+这个案例以「一周花茶不重样，养生秘籍大公开」为原文。粘贴链接并选择「爆文复刻」，解析后在「我的要求」里填写：
 
-- 🎯 **文案有「人味儿」** —— 贴合小红书社区语气，不像 AI 写的干巴文案，有效规避 AI 检测，评论区更愿意互动。
-- 🖼️ **一套图风格统一** —— 自研视觉一致性算法，一次出 6-9 张图，背景色、排版、调性统一，不用一张张对齐。
-- 🛍️ **商品带货专用模式** —— 关联商品图 + 带货 Skill，逐页匹配你的真实商品图出图，保真、不乱编包装。
-- ✍️ **大纲先给你看，能改** —— AI 先出标题/正文/每页图片说明，你用大白话让它改（「第 3 页换成对比图」），满意再出图，不浪费。
-- ⚡ **一句话到成品** —— 从主题到「文案 + 9 图」全自动；一人抵一个内容团队，规模化撬动公域流量。
+> 换成6张茉莉花茶搭配
 
-> 📈 已有 **20 万+ 创作者**在用，**每日生成 1000+** 篇图文。—— 数据来自 [hy.ithinkai.cn](https://hy.ithinkai.cn)
+![输入花茶笔记链接，解析原文并填写“换成6张茉莉花茶搭配”](assets/readme/clone-input.png)
 
-### 📖 真实案例（公众号）
-- [案例一 · 红鸦生成小红书图文实测](https://mp.weixin.qq.com/s/yr8dFcwgrbf5a-z-g4Z35g)
-- [案例二 · 红鸦带货图文玩法](https://mp.weixin.qq.com/s/OfYNwi_t_ql7aq4KgN6tjw)
+<br>
 
----
+**② 查看生成结果**
 
-## 🎁 先领免费试用积分，再动手
+| 原文：一周花茶搭配 | 生成结果：茉莉花茶搭配 |
+| --- | --- |
+| ![原文的六格花茶封面，主体为玫瑰及其他搭配材料](assets/readme/clone-source-cover.png) | ![红鸦生成的茉莉花茶封面和内容页](assets/readme/clone-generated-pages.png) |
 
-这个 Skill 调用的是红鸦线上能力，**消耗的是你红鸦账号里的积分**（大纲默认 2 分/次，图片默认 5 分/张，失败自动退款）。
+生成结果包含新的发布标题、正文和配图；可以继续修改文案、大纲及每页图片要求。
 
-**新用户注册即送免费试用积分**，够你先免费生成几篇看看效果：
+**[查看完整案例：原文 7 张图片、输入截图与生成结果 →](docs/cases/viral-clone.md)**
 
-### 👉 [**立即去 hy.ithinkai.cn 注册领积分**](https://hy.ithinkai.cn) 👈
+<br>
 
 ---
 
-## 快速开始（3 步，5 分钟）
+<a id="case-product"></a>
+<a id="案例三商品图文输入主题关联商品生成带货图文"></a>
+<h3><img src="assets/readme/case-3-title.svg" alt="案例 3｜商品图文：输入主题＋关联商品 → 生成带货图文" width="960"></h3>
 
-### 1️⃣ 拿一把 API Key（自助，30 秒）
-1. 打开 **[hy.ithinkai.cn](https://hy.ithinkai.cn)**，微信扫码登录（**注册即领免费试用积分**）
-2. 左栏点「**红鸦 Skills**」（或首页输入框上方的 🦞 入口）
-3. 点「**生成 API Key**」，复制 `rk-` 开头的 key（明文只显示一次，请立即保存）
+**① 输入主题，关联商品**
 
-### 2️⃣ 二选一安装
+选择「商品图文」，输入主题，例如：
 
-**方式 A · Skill（推荐，零依赖，任何能读写文件的 Agent 都适用）**
+> 写一篇果蔬脆片的种草图文，围绕办公室下午茶和追剧零食场景展开。
 
-把 `SKILL.md` 放到你的 Agent 技能目录，例如 Claude Code：
+关联自己的果蔬脆片商品后，红鸦会结合商品资料、卖点和素材组织内容。
+
+选择「商品图文」，点击「关联商品」：
+
+![选择商品图文模式并点击关联商品入口](assets/readme/product-mode-entry.png)
+
+<br>
+
+在关联窗口中选择商品档案、素材图片和本篇使用的 Skill，再确认关联：
+
+![关联商品窗口：选择商品档案、素材图片和创作Skill](assets/readme/product-association.png)
+
+<br>
+
+**② 生成商品带货图文**
+
+先查看和修改文案、大纲，再批量生成每页配图。
+
+![果蔬脆片商品图文：封面、包装、种类、细节和办公场景](assets/readme/product-result.png)
+
+**[查看完整案例：输入主题、关联商品与生成结果 →](docs/cases/product.md)**
+
+<br>
+
+---
+
+## 从资料到整篇图文，接着完成发布
+
+**主题 / 文章 / 视频 → 选择创作方式 → 关联资料与素材 → 标题、正文和大纲 → 修改并生成图片 → 下载或同步发布**
+
+![红鸦创作输入说明：链接、主题、创作模式、知识库、素材和图片样式](assets/readme/creation-input.png)
+
+| 你要做的事 | 红鸦提供的功能 |
+| --- | --- |
+| 把已有内容变成图文 | 解析小红书图文、公众号文章或视频链接，整理为创作资料 |
+| 复用自己的业务资料 | 关联知识库，使用品牌、课程、业务介绍等长期资料 |
+| 围绕真实商品创作 | 关联商品档案，复用商品信息、卖点与商品图片 |
+| 指定图片内容与布局 | 按页选择画面素材和版式参考，写明保留、替换与修改要求 |
+| 控制整篇内容 | 编辑发布标题、正文、每页文案与画面要求，再生成图片 |
+| 调整某一页 | 放大检查图片，修改单页要求并重新生成 |
+| 交付与发布 | 单张或整套下载，通过发布插件同步到平台发布页面 |
+
+**画面素材决定画面里使用什么；版式参考帮助指定怎样组织布局和视觉样式。**
+
+<details>
+<summary><strong>展开查看完整操作示例：解析、商品关联、大纲、批量生成与 Agent 调用</strong></summary>
+
+![红鸦从内容解析到图文生成的完整操作示例](assets/readme/workflow-overview.png)
+
+</details>
+
+### 一键同步多平台，预览后自己点击发布
+
+生成图文后，可以通过发布插件将**标题、正文和图片**同步到小红书、抖音、公众号、知乎等平台的浏览器发布页面。
+
+文案和图片自动填入后，你仍然可以检查、修改，最后亲自点击发布。具体支持的平台和操作步骤以插件当前版本为准。
+
+下面是这篇广州攻略的发布入口与同步到小红书编辑页后的实际截图：
+
+![红鸦生成完成后的发布菜单，可选择同步的平台](assets/readme/publish-platforms.png)
+
+![标题、正文和6张图片已同步到小红书浏览器发布页面，等待用户检查和点击发布](assets/readme/publish-xiaohongshu.png)
+
+**[前往红鸦，查看发布插件与使用教程 →](https://hy.ithinkai.cn)**
+
+## 在 Agent 中使用红鸦
+
+给 Codex、Claude Code、WorkBuddy 等 Agent 安装红鸦 Skill，就可以在对话中提出需求、查看大纲、修改文案和生成图片。
+
+> 帮我做一篇广州2日游的小红书攻略。先给我标题、正文和每页大纲，我确认后再生成配图。
+
+![真实操作示例：WorkBuddy 调用红鸦 Skill，生成商品图文](assets/readme/agent-result.png)
+
+操作截图来自[红鸦完整工作流教程](https://mp.weixin.qq.com/s/7kIZOFyF13ySMdCJrLqsTQ)。
+
+生成记录可以在同账号网页端「我的创作」中查看，继续预览、保存或下载。
+
+<details>
+<summary><strong>查看 Agent 与网页端「我的创作」的操作截图</strong></summary>
+
+![Agent 调用后，在网页端查看同一账号的创作记录](assets/readme/agent-web-sync.png)
+
+</details>
+
+| 接入方式 | 用法 | 文档 |
+| --- | --- | --- |
+| **Skill** | 在 Agent 对话中生成大纲、修改内容、批量出图，创建或复用商品档案 | [Skill 说明](skill/redya-xiaohongshu/SKILL.md) |
+| **MCP** | 通过支持 MCP 的客户端调用大纲、图片、商品和记录等工具 | [MCP 配置与工具清单](mcp/README.md) |
+| **OpenAPI** | 把已开放的图文创作接口集成到自己的应用中 | [接口文档](docs/openapi-v1.md) |
+
+各接入方式的功能以对应工具和接口文档为准；多平台同步通过发布插件完成。
+
+## 安装 Skill
+
+### 1. 获取自己的 API Key
+
+打开 **[红鸦 AI](https://hy.ithinkai.cn)**，登录后进入「红鸦 Skills」，创建自己的 API Key。
+
+### 2. 让 Agent 安装，或手动安装
+
+可以把下面这段发给你的 Agent：
+
+```text
+请安装这个仓库里的 redya-xiaohongshu Skill：
+https://github.com/rnthking/redya-skills
+
+安装好后，帮我配置本地环境变量 REDYA_API_KEY 和 REDYA_BASE_URL。
+REDYA_BASE_URL 使用 https://hy.ithinkai.cn。
+```
+
+<details>
+<summary><strong>手动安装到 Codex</strong></summary>
+
+```bash
+mkdir -p ~/.codex/skills/redya-xiaohongshu
+curl -fsSL https://raw.githubusercontent.com/rnthking/redya-skills/main/skill/redya-xiaohongshu/SKILL.md \
+  -o ~/.codex/skills/redya-xiaohongshu/SKILL.md
+export REDYA_API_KEY='rk-你的key'
+export REDYA_BASE_URL='https://hy.ithinkai.cn'
+```
+
+</details>
+
+<details>
+<summary><strong>手动安装到 Claude Code</strong></summary>
 
 ```bash
 mkdir -p ~/.claude/skills/redya-xiaohongshu
 curl -fsSL https://raw.githubusercontent.com/rnthking/redya-skills/main/skill/redya-xiaohongshu/SKILL.md \
   -o ~/.claude/skills/redya-xiaohongshu/SKILL.md
-export REDYA_API_KEY=rk-你的key
-export REDYA_BASE_URL=https://hy.ithinkai.cn
+export REDYA_API_KEY='rk-你的key'
+export REDYA_BASE_URL='https://hy.ithinkai.cn'
 ```
 
-> 💡 更省事：把上面这段连同你的 key 直接丢给 Claude Code / Codex，让它「帮我安装这个 skill」，它会自己下载装好。
+</details>
 
-**方式 B · MCP（Claude Code / Cursor 等支持 MCP 的客户端，需 Node ≥ 18）**
+其他 Agent 请将 [SKILL.md](skill/redya-xiaohongshu/SKILL.md) 放入其支持的技能目录。希望通过 MCP 接入的客户端可查看 [MCP 文档](mcp/README.md)。
 
-```bash
-cd mcp && npm install
-claude mcp add redya \
-  -e REDYA_API_KEY=rk-你的key \
-  -e REDYA_BASE_URL=https://hy.ithinkai.cn \
-  -- node "$(pwd)/index.js"
-```
+### 3. 生成你的第一篇图文
 
-### 3️⃣ 直接对你的 AI 说人话
-- 「帮我写一篇**三伏天养生茶**的小红书，先给我看大纲」→ AI 生成大纲 → 你让它改 → 满意后出图
-- 「直接出图，主题是**办公室绿植推荐**」→ 一步到位
-- 「用这张商品图 `[URL]` 生成一篇带货笔记」→ AI 自动建商品档案再出图
+> 帮我写一篇「办公室绿植推荐」的小红书图文。先给我看标题、正文和每页大纲，确认后再生成图片。
 
-生成的每一篇都会同步到网页端 **[hy.ithinkai.cn](https://hy.ithinkai.cn) →「我的创作」**，可预览、下载、一键发布小红书。
+商品图文也可以直接说：
 
----
+> 用我已有的商品档案，做一篇办公室零食种草图文，先给我看大纲。
 
-## 目录
+## 更多生成效果
 
-| 路径 | 说明 |
-|---|---|
-| [`skill/redya-xiaohongshu/SKILL.md`](skill/redya-xiaohongshu/SKILL.md) | 给 AI Agent 的技能说明书（交互流程 + 接口速查 + 错误处理） |
-| [`mcp/`](mcp/) | MCP Server（Node stdio，9 个工具） |
-| [`docs/openapi-v1.md`](docs/openapi-v1.md) | OpenAPI v1 字段级接口文档 |
+![红鸦精选案例：花茶、旅行、探店、商品、知识与学习图文](assets/readme/showcase.png)
 
-## 说明
-- 计费与网页端同价：大纲默认 2 积分/次，图片默认 5 积分/张，生成失败自动退款。
-- 图片为对象存储直链，建议 7 天内转存。
-- 生成内容的合规责任由调用方承担。
+**[打开红鸦，查看精选案例 →](https://hy.ithinkai.cn)**
 
-## 没有 key / 提示未授权？
+## 实操教程
 
-说明你还没登录红鸦拿 key，或积分用完了 —— 去官网自助解决：
+- [从爆文链接解析、逐页复刻，到整套配图与发布](https://mp.weixin.qq.com/s/7kIZOFyF13ySMdCJrLqsTQ)
+- [主题、文章与视频输入，知识库、商品档案和完整创作工作流](https://mp.weixin.qq.com/s/2W3WAa-2MaiD40cRTnUwDA)
+- [普通图文、商品图文与 Agent 调用入门](https://mp.weixin.qq.com/s/yr8dFcwgrbf5a-z-g4Z35g)
 
-### 👉 [**打开 hy.ithinkai.cn 注册领免费试用积分 / 生成 API Key**](https://hy.ithinkai.cn)
+## 常见问题
+
+<details>
+<summary><strong>会生成多少张图片？</strong></summary>
+
+按具体创作要求和大纲确定，不固定为 9 张。可以在生成前说明页数，并修改每页内容。
+
+</details>
+
+<details>
+<summary><strong>如何收费？</strong></summary>
+
+调用使用绑定红鸦账号的积分。费用随创作内容、所选模型和操作变化，具体以当前网页说明及接口返回为准。
+
+</details>
+
+<details>
+<summary><strong>图片需要保存到本地吗？</strong></summary>
+
+生成完成后可单张或整套下载。线上保存期限以作品页面当前提示为准，建议及时下载留存。
+
+</details>
+
+<details>
+<summary><strong>是不是生成后就直接发布了？</strong></summary>
+
+生成完成后，通过发布插件同步到浏览器中的平台发布页面。用户可以预览、修改，最后自行点击发布。
+
+</details>
 
 ---
 
 <div align="center">
 
-**红鸦 RedYA** · 深耕小红书 & 公众号图文的专业级 AI 营销工具
-一句话生成爆款图文，一键发布 · 一人抵一个团队
+**红鸦 AI · 从内容创作，到多平台发布准备**
 
-### 🌐 [hy.ithinkai.cn](https://hy.ithinkai.cn) —— 注册即领免费试用积分
+**[在线体验](https://hy.ithinkai.cn) ｜ [查看案例](#三种创作方式从输入到成品) ｜ [安装 Skill](#安装-skill)**
 
 广州灵境之城科技有限公司
 
