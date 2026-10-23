@@ -2,7 +2,7 @@
   <a href="https://hy.ithinkai.cn"><img src="assets/readme/redya-logo.png" alt="红鸦 logo" width="96" height="96"></a>
 </p>
 
-# 红鸦AI（redya-skill）：输入主题、图文、文章、视频，一键转成小红书图文
+#### 红鸦AI（redya-skill）：输入主题、图文、文章、视频，一键转成小红书图文
 
 输入主题，或粘贴图文、文章、视频链接，自动生成**发布标题、正文和整套图片**。
 
