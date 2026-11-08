@@ -1,6 +1,6 @@
 ---
 name: redya-xiaohongshu
-description: 当用户想生成小红书图文、种草笔记或商品带货图文时使用——通过红鸦开放平台 API 完成大纲创作、逐页出图与商品建档的全流程。
+description: 使用红鸦 API 创作小红书图文、制作 Live 实况图片，或检测和修改文案敏感词；支持商品档案及个人词库。
 ---
 
 # 红鸦开放平台:小红书图文生成
@@ -59,12 +59,93 @@ description: 当用户想生成小红书图文、种草笔记或商品带货图�
 
 `status: partial` 表示部分页失败。查看 `pages` 里哪些页 `status` 为 `failed`,**明确告诉用户是哪几页失败了**,并询问是否要对失败页单页重生成(`POST /openapi/v1/images/regenerate`)。重生成同样是异步的,继续轮询同一条 record。
 
-### 4. 商品带货:先建档,再创作
+### 4. 用户给了链接:先解析,再改写
+
+用户丢来一条**小红书 / 抖音 / 公众号 / 快手 / B站**链接(或整段分享口令)时,不要让他重新描述内容:
+
+1. `POST /openapi/v1/sources` 提交链接(**扣 2 积分**,解析失败不扣);
+2. 每 5~10 秒轮询 `GET /openapi/v1/sources/:source_id`,直到 `status` 为 `ready` 或 `failed`;
+3. 拿到结果后**先把原内容摘要给用户看**(标题、作者、正文或口播文案前几句),确认是不是他要的那条;
+4. `POST /openapi/v1/outlines` 时带上 `source_id`,原内容会作为参考资料进入生成。
+
+要点:
+
+- **视频类**(抖音/快手/B站,以及小红书视频笔记)的价值在 `transcript`(口播文案)——阿里云语音识别转写的原视频人声。`content_text` 往往很短甚至是空的;
+- **图文类**(公众号、小红书图文)的价值在 `content_text` 和 `images`;
+- `transcript` 为空且 `content_type` 是 `video` 时,多半是纯 BGM 没有人声,如实告诉用户,别硬编;
+- 解析结果**保留 72 小时**,过期后 `source_id` 失效,需要重新解析。
+
+### 5. 知识库:先列出,再选用
+
+用户说"参考我知识库里的资料"时:
+
+1. `GET /openapi/v1/knowledge-bases` 列出他的知识库,让他挑(或按名字自动匹配);
+2. `POST /openapi/v1/outlines` 带 `knowledge_base_ids`(数组,最多 5 个)。
+
+生成时会用用户的 topic 去这些知识库里检索最相关的片段注入提示词。**用户没提知识库就别自作主张带上**——检索出的资料会影响文案走向。
+
+### 6. 商品带货:先建档,再创作
 
 - 用户给了**商品图 URL** → 先调 `POST /openapi/v1/products` 一键建档,拿到 `product_id`;
 - 然后 `POST /openapi/v1/outlines` 时带上 `product_id`(style 会自动用带货风格,无需手动指定);
 - 可选:先 `GET /openapi/v1/skills` 列出带货 Skill 让用户挑,outlines 时带 `skill_id`;
 - 用户想做商品带货但**没给商品图**时,提醒用户:商品图文必须提供商品图片 URL(http/https 直链,1~30 张),或者用 `GET /openapi/v1/products` 看看账号下是否已有建好档的商品可直接复用。
+
+### 7. 中文请求使用 UTF-8,编辑后核对保存结果
+
+中文 JSON 直接由程序序列化为 UTF-8 发送。用 curl 时,先把请求写入 UTF-8 文件,再用 `--data-binary @request.json`;不要经由系统默认编码或 ASCII 转码的命令行管道。仅设置请求头不能修复已变成问号的文字。
+
+例如,用 Python 保存请求文件:
+
+```python
+import json
+from pathlib import Path
+payload = {"topic": "三伏天养生茶推荐", "style": "xiaohongshu_2"}
+Path("request.json").write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+```
+
+然后发送(Windows PowerShell 请把下方命令改为 `curl.exe`,使用自己的变量语法或填入完整 URL 和 Key):
+
+```bash
+curl -sS --max-time 360 "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/openapi/v1/outlines" \
+  -H "Authorization: Bearer $REDYA_API_KEY" \
+  -H "Content-Type: application/json; charset=utf-8" \
+  --data-binary @request.json
+```
+
+编辑大纲后,先 `GET /openapi/v1/records/:record_id` 核对标题、正文和每页说明与用户确认版本一致,再提交生图。接口返回 `422 invalid_text_encoding` 表示检测到无效字符或大量替代问号:保留原稿、不扣费,从用户原文或正常备份重新构造 UTF-8 请求。不要猜字补回,不要切换模型或重复提交同一份乱码。
+
+---
+
+## 实况图与敏感词检测（1.6.1）
+
+仅转实况或检测文案时，直接使用下面的工具接口，不要先生成图文大纲。所有调用沿用用户自己的 API Key。以下接口无需先创建图文大纲。
+
+### 图片转 Live 实况
+
+1. `GET /openapi/v1/live-photos/capabilities` 查询可用模式、AI 模型、清晰度和积分报价。`mode=live` 是免费镜头动效；`mode=ai` 是 AI 自然动态，先展示当前报价并取得用户对收费制作的授权。
+2. 为每张图生成并保存一个 UUID `request_id`，以 `multipart/form-data` 调 `POST /openapi/v1/live-photos`：必填 `request_id`、图片文件 `image`；选填 `mode`（默认 live）、`effect`（0–12）。AI 再传 `model_code`、`quality`、当前报价 `expected_points`。
+3. 默认 `action=natural`。只给有要求的图片设置 `action=custom` 和该图的 `prompt`；其他图保持自然微动。不要加入文章大纲、素材替换说明或商品用途作为动作指令。支持尾帧的 AI 模型可额外上传 `tail_image`。
+4. 每 5–10 秒查询 `GET /openapi/v1/live-photos/:request_id`。同一请求重试沿用原 UUID 和参数，参数冲突返回 409；超时、断线、needs_review 时查原请求，不换编号重复提交。
+5. 提交结果待核实或服务重启后，可 `POST /openapi/v1/live-photos/:request_id/recover` 恢复原任务；不会重新制作或再次扣视频积分。
+6. 完成后 `GET /openapi/v1/live-photos/:request_id/content?format=pvt` 下载，格式还包括 `mp4`、`photo`、`ios`、`android`、`mac`、`windows`。返回的下载路径需要拼接 Base URL 并携带 Key；先保存本地再交付，不能当作匿名公开图片链接。
+
+```bash
+# REQUEST_ID 在首次制作前生成并保存，重试复用。
+curl --fail --max-time 120 "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/openapi/v1/live-photos" \
+  -H "Authorization: Bearer $REDYA_API_KEY" \
+  -F "request_id=$REQUEST_ID" -F 'mode=live' -F 'effect=0' -F 'image=@/absolute/path/photo.jpg'
+```
+
+批量处理时保存每张图片对应的 UUID。静置物品或场景识别不确定时，服务会使用整幅同步微动保护，不调用收费视频生成；最终费用查看 `video_points`。保存教程：https://hy.ithinkai.cn/tools/live-photo/save 。下载成功不能表述成已导入手机实况相册。
+
+### 敏感词检测与修改
+
+- `GET /openapi/v1/content-review/status` 查看配置及 `points_per_check`。费用与网页一致，先告知用户；失败不收费，缓存结果以 `charged_points` 为准。
+- `POST /openapi/v1/content-review`，JSON：`{"fields":[{"id":"title","label":"标题","text":"待检查标题"},{"id":"body","label":"正文","text":"待检查正文"}]}`。每次 1–64 段、共 1–30000 字，中文 JSON 必须 UTF-8。
+- 展示 `findings` 中的原词、原因和替换建议，让用户确认修改范围。检测不等于平台审核通过，不自动发布。
+- 用户确认后，`POST /openapi/v1/content-review/replace`，携带原样的 `fields`、完整原始检测结果 `review`、选中的 `finding_ids`、`action=replace` 或 `delete`，以及可选 `choices`（finding.id 到替换词）。服务校验签名、原文及账号，不自行拼造检测结果。
+- 用户明确要求管理个人词库时才使用：`GET /openapi/v1/sensitive-words`；`PUT` 提交 `{"words":[{"word":"词语","replacement":"替换词","level":"warning","reason":"说明"}]}`；`DELETE` 提交 `{"ids":[词条ID]}`。只操作本人词库，不扣检测积分。
 
 ---
 
@@ -72,10 +153,12 @@ description: 当用户想生成小红书图文、种草笔记或商品带货图�
 
 ### POST /openapi/v1/outlines — 生成大纲(同步)
 
-用途:根据主题生成小红书图文大纲(标题 + 正文 + 每页图片说明)。同步接口,秒级~1 分钟返回,服务端超时上限 4 分钟,**curl 必须带 `--max-time 300`**。
+用途:根据主题生成小红书图文大纲(标题 + 正文 + 每页图片说明)。同步接口,通常秒级~1 分钟返回,复杂内容可能更久。服务端总超时上限 **5 分钟**(包含渠道切换),**curl 请带 `--max-time 360`**,为返回和保存结果留出余量。
+
+文本渠道按网页后台对应创作模式的当前配置调用。普通图文与商品图文分别使用各自的渠道列表,按配置顺序选择;遇到 503、额度不足等明确的渠道失败时切换下一项,单次大纲最多调用 3 个渠道。不会因格式检查失败反复重写或自动补全。旧版 Skill 传入的 `xiaohongshu_2`、`xiaohongshu_3`、`xiaohongshu_4` 继续兼容,无需为了渠道修复重新安装。`style` 不用于指定文本渠道,默认输出上限为 16000 tokens(可由管理员按渠道配置覆盖)。
 
 ```bash
-curl -sS --max-time 300 -X POST "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/openapi/v1/outlines" \
+curl -sS --max-time 360 -X POST "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/openapi/v1/outlines" \
   -H "Authorization: Bearer $REDYA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -92,6 +175,8 @@ curl -sS --max-time 300 -X POST "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/opena
 - `product_id`(可选)商品图文模式必传(见 /products)
 - `skill_id`(可选)带货 Skill(见 /skills)
 - `image_urls`(可选)参考图 URL 数组(普通模式)
+- `source_id`(可选)先用 `POST /sources` 解析链接拿到的 ID,原内容会作为参考资料进入生成
+- `knowledge_base_ids`(可选)知识库 ID 数组,最多 5 个(见 /knowledge-bases)。用户没提就别带
 - `auto`(可选)`true` = 大纲完成后立即整篇出图
 - `callback_url`(可选)auto 时出图完成后 webhook 回调
 
@@ -230,6 +315,54 @@ curl -sS "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/openapi/v1/skills" \
 
 响应:`{"skills":[{"skill_id":"real_exp","name":"真实体验种草","one_liner":"像自己用过的分享,不硬推"}]}`
 
+### POST /openapi/v1/sources — 链接解析(异步)
+
+把一条平台链接解析成可复用的文案素材。**每次成功解析扣 2 积分,失败不扣。**
+
+请求:
+
+```json
+{ "url": "https://v.douyin.com/xxxxx/" }
+```
+
+`url` 可以是纯链接,也可以直接把整段分享口令粘进来(如 `7.41 复制打开抖音,看看【...】 https://v.douyin.com/xxx/`),服务端会自己提取。
+
+支持的平台:小红书(`xiaohongshu.com` / `xhslink.com` / `xhslink.cn`)、抖音(`douyin.com`)、公众号(`mp.weixin.qq.com`)、快手(`kuaishou.com`)、B站(`bilibili.com` / `b23.tv`)。
+
+响应:`{"source_id":"src_...","platform":"douyin","content_type":"video","status":"pending","points_cost":2}`
+
+### GET /openapi/v1/sources/:source_id — 解析结果轮询
+
+`status`:`pending` → `processing` → `ready` / `failed`。**每 5~10 秒轮一次**,通常 20~60 秒完成(视频要下载+转写,可能到 2 分钟)。
+
+`ready` 时的响应:
+
+```json
+{
+  "source_id": "src_...",
+  "platform": "douyin",
+  "content_type": "video",
+  "status": "ready",
+  "title": "...",
+  "author": "...",
+  "content_text": "原文案(图文类是正文,视频类常常很短或为空)",
+  "transcript": "口播文案:视频人声的逐句转写",
+  "images": ["https://.../content-sources/src_x/media/0"],
+  "video_url": "https://.../content-sources/src_x/video",
+  "original_url": "https://v.douyin.com/xxxxx/"
+}
+```
+
+`failed` 时看 `error` 字段,原样转述给用户。常见原因:链接失效、平台风控、视频没有人声。
+
+`images` 和 `video_url` 是**带鉴权的代理地址**,直接展示给用户即可;平台原始 CDN 地址带签名且校验来源,拿到也用不了。
+
+### GET /openapi/v1/knowledge-bases — 我的知识库
+
+响应:`{"list":[{"knowledge_base_id":"folder_xxx","name":"护肤材料"}]}`
+
+拿到的 `knowledge_base_id` 用于 `POST /outlines` 的 `knowledge_base_ids`。
+
 ### GET /openapi/v1/me — 账户信息
 
 用途:查积分余额、key 信息与今日配额。402/429 时先调它再向用户说明。
@@ -255,13 +388,14 @@ curl -sS "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/openapi/v1/me" \
 | 404 | `not_found` | 资源不存在,检查 id 是否拼错 |
 | 409 | `conflict` | 生成中(或已完成)。不是错误——继续轮询 `GET /records/:id` 等终态;整篇重出已完成记录用 `force: true` |
 | 422 | `invalid_request` | 参数错误,按 message 修正请求体 |
+| 422 | `invalid_text_encoding` | 中文编码疑似损坏。原稿不覆盖、不扣费;按上面的 UTF-8 说明从正常原文重新发送,不要继续生图 |
 | 429 | `quota_exceeded` | 今日配额用尽。告诉用户该 key 的日生成配额已用完(可用 `GET /me` 看 `daily_quota`/`used_today`),明天再试或找管理员调额 |
-| 5xx | — | 服务端异常,等几秒后重试一次;再失败就向用户如实报告 |
+| 5xx | — | 大纲服务已按配置尝试渠道切换。仍失败时报告具体原因,不要自动连续重提;已有 `record_id` 的请求先查记录状态,避免结果未确认就重复出图 |
 
 ## 注意事项
 
 - 单篇最多 **15 页**;`PUT /outlines/:id` 的 pages 必须 1~15 页。
-- 大纲接口是同步的,服务端超时上限 4 分钟——curl 请带 **`--max-time 300`**,别用默认超时。
+- 大纲接口是同步的,服务端总超时上限 **5 分钟**,包含渠道切换;curl 请带 **`--max-time 360`**。5 分钟是最长等待时间,不是每次都要等满。
 - 图片 URL 是 COS 直链,**建议 7 天内转存**到用户自己的存储,长期引用别依赖原链接。
 - 请勿并发对同一 record 提交出图(有 409 保护)。
 - 生成内容的归属与合规责任由调用方承担,平台保留全部生成记录;涉及功效宣称、医疗等敏感品类时提醒用户自行把关文案合规。

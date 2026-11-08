@@ -8,7 +8,7 @@
 ## 安装
 
 ```bash
-cd openapi-clients/mcp
+cd redya-skills/mcp
 npm install
 ```
 
@@ -117,3 +117,22 @@ regenerate_page               # partial 时补失败页,再轮询
 - 单篇最多 15 页;大纲接口同步、超时上限 4 分钟
 - 请勿并发对同一 record 提交出图(服务端有 409 保护)
 - 图片 URL 为 COS 直链,建议 7 天内转存到自己的存储
+
+
+## 1.1.0 新增工具
+
+| 工具 | 作用 |
+| --- | --- |
+| `live_photo_capabilities` | 查询实况模式、模型、清晰度和当前积分报价 |
+| `create_live_photo` | 上传本地图片制作免费动效或 AI 实况；逐图 UUID 去重 |
+| `get_live_photo` | 查询原请求状态及鉴权下载地址 |
+| `recover_live_photo` | 恢复已提交的原任务结果，不重复生成 |
+| `download_live_photo` | 下载 MP4、PVT、iPhone、Android、Mac 或 Windows 格式到本地 |
+| `content_review_status` | 查询文案检测配置与积分 |
+| `review_content` | 检测文案并返回完整签名结果 |
+| `replace_review_findings` | 按用户确认范围替换或删除风险表达 |
+| `list_sensitive_words` | 查看本人个人词库 |
+| `save_sensitive_words` | 新增或修改本人词条 |
+| `delete_sensitive_words` | 删除本人指定词条 |
+
+收费操作前确认报价。实况每张图保存独立 `request_id`，网络中断后查原编号，不更换编号重复生成。仅转图片实况或检测文案时不先生成图文大纲。下载保存不等于已导入手机实况相册；详见 [API 合同与保存说明](../docs/openapi-live-review.md)。

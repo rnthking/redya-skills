@@ -1,7 +1,7 @@
 {
   "name": "redya-mcp",
-  "version": "1.0.0",
-  "description": "红鸦开放平台 MCP Server (stdio) —— 让 Agent 通过 MCP 调用小红书图文生成能力",
+  "version": "1.1.0",
+  "description": "红鸦开放平台 MCP：图文创作、Live 实况制作与文案敏感词检测",
   "type": "module",
   "main": "index.js",
   "bin": {
@@ -20,5 +20,8 @@
     "xiaohongshu",
     "openapi"
   ],
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
 }
