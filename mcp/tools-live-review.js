@@ -45,7 +45,7 @@ export function registerLiveReviewTools(server, { callApi, run, API_KEY, BASE_UR
   }, async args => run(() => callApi('POST', '/openapi/v1/content-review/replace', args)));
   server.tool('list_sensitive_words', '列出当前用户的个人敏感词，不扣检测积分。', {}, async () => run(() => callApi('GET', '/openapi/v1/sensitive-words')));
   server.tool('save_sensitive_words', '仅在用户明确要求维护个人词库时新增或更新本人词条，不改其他账号。', {
-    words: z.array(z.object({ id: z.number().int().optional(), word: z.string(), replacement: z.string().optional(), level: z.string().optional(), reason: z.string().optional() })),
+    words: z.array(z.object({ id: z.number().int().optional(), word: z.string(), replacement: z.string().optional(), level: z.enum(['high', 'medium']).optional(), reason: z.string().optional() })),
   }, async args => run(() => callApi('PUT', '/openapi/v1/sensitive-words', args)));
   server.tool('delete_sensitive_words', '仅删除用户明确指定的本人个人词条。', { ids: z.array(z.number().int()) }, async args => run(() => callApi('DELETE', '/openapi/v1/sensitive-words', args)));
 }

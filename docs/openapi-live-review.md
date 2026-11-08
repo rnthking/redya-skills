@@ -91,7 +91,7 @@ curl --fail --max-time 120 \
 ## 个人词库
 
 - `GET /openapi/v1/sensitive-words`：列出本人词条。
-- `PUT /openapi/v1/sensitive-words`：`{"words":[{"word":"词语","replacement":"替换词","level":"warning","reason":"说明"}]}`。未填 ID 新增；已有 ID 更新本人词条。
+- `PUT /openapi/v1/sensitive-words`：`{"words":[{"word":"词语","replacement":"替换词","level":"medium","reason":"说明"}]}`。未填 ID 新增；已有 ID 更新本人词条。
 - `DELETE /openapi/v1/sensitive-words`：`{"ids":[1,2]}`，只能删除本人词条。
 
 词库操作不扣检测积分，仅在用户明确要求维护个人词库时调用。不同账号相互隔离。

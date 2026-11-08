@@ -145,7 +145,7 @@ curl --fail --max-time 120 "${REDYA_BASE_URL:-https://hy.ithinkai.cn}/openapi/v1
 - `POST /openapi/v1/content-review`，JSON：`{"fields":[{"id":"title","label":"标题","text":"待检查标题"},{"id":"body","label":"正文","text":"待检查正文"}]}`。每次 1–64 段、共 1–30000 字，中文 JSON 必须 UTF-8。
 - 展示 `findings` 中的原词、原因和替换建议，让用户确认修改范围。检测不等于平台审核通过，不自动发布。
 - 用户确认后，`POST /openapi/v1/content-review/replace`，携带原样的 `fields`、完整原始检测结果 `review`、选中的 `finding_ids`、`action=replace` 或 `delete`，以及可选 `choices`（finding.id 到替换词）。服务校验签名、原文及账号，不自行拼造检测结果。
-- 用户明确要求管理个人词库时才使用：`GET /openapi/v1/sensitive-words`；`PUT` 提交 `{"words":[{"word":"词语","replacement":"替换词","level":"warning","reason":"说明"}]}`；`DELETE` 提交 `{"ids":[词条ID]}`。只操作本人词库，不扣检测积分。
+- 用户明确要求管理个人词库时才使用：`GET /openapi/v1/sensitive-words`；`PUT` 提交 `{"words":[{"word":"词语","replacement":"替换词","level":"medium","reason":"说明"}]}`；`DELETE` 提交 `{"ids":[词条ID]}`。只操作本人词库，不扣检测积分。
 
 ---
 
