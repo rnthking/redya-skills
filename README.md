@@ -140,8 +140,8 @@
 ---
 
 <a id="case-live"></a>
-
-### 方式 4｜Live 实况图文
+<a id="方式-4live-实况图文"></a>
+<h3><img src="assets/readme/case-4-title.svg" alt="案例 4｜Live 实况图文，选图 → 转实况 → 下载保存" width="960"></h3>
 
 **① 输入主题，选择图片来源**
 
@@ -150,15 +150,41 @@
 - **使用素材原图**。上传自己的照片，红鸦生成标题和正文，配图使用上传的原图。使用原图不消耗生图积分。
 - **AI 生成实拍图**。上传产品图或选用产品图库素材，让 AI 生成实拍风格的配图，再用这些图片制作实况。
 
+下图以宝宝针织帽为例，解析参考链接、上传黄色帽子的素材，再写明要替换的内容。
+
+![在创作中心选择实况图文，解析参考链接、上传素材并填写改写要求](assets/readme/live/step-1-input.jpg)
+
+生成后可在结果页检查标题、正文和配图。
+
+![宝宝针织帽的创作结果，包含标题、正文与四张生成的配图](assets/readme/live/step-1-generated.jpg)
+
+<br>
+
 **② 选图制作实况**
 
 图片准备好后，在结果页点击「转实况」，选择一张、几张或整篇制作。普通图文、商品图文和爆文复刻的成品也可以从结果页转实况。
 
+![创作结果页右上角的转实况入口](assets/readme/live/step-2-entry.jpg)
+
 制作时可以选免费镜头动效或 AI 转 Live。AI 的「自然微动」无需填写提示词。切到「自定义动作」后，可以为不同图片分别描述动作，留空的图片使用自然微动。
+
+![实况预览中的选图、免费转 Live、AI 转 Live 和自定义动作设置](assets/readme/live/step-2-preview.jpg)
+
+<br>
 
 **③ 下载与保存**
 
-制作完成后，作品保留原图和实况，可按设备教程下载并保存。公众号教程包含用原图创作、生成实拍图、复刻后转实况以及批量转换的操作演示。[Live 实况图文生成教程](https://mp.weixin.qq.com/s/F61afJBJkwgp1sP170vY3Q) · [实况图保存教程](https://hy.ithinkai.cn/tools/live-photo/save)
+制作完成后，在结果页右上角点击「下载」，打包保存原图和实况。下图是用 Mac 打开下载的实况 ZIP。
+
+![在 Mac 上打开下载的 PVT 实况压缩包](assets/readme/live/step-3-unzip.jpg)
+
+按设备教程将实况保存到 iPhone 后，在「照片」里看到「实况」标识，长按即可播放。
+
+<img src="assets/readme/live/step-3-iphone.jpg" alt="iPhone 照片 App 中成功保存的实况图" width="300">
+
+[Live 实况图文生成教程](https://mp.weixin.qq.com/s/F61afJBJkwgp1sP170vY3Q) · [实况图保存教程](https://hy.ithinkai.cn/tools/live-photo/save)
+
+<br>
 
 #### 成品效果
 
