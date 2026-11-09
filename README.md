@@ -160,6 +160,26 @@
 
 制作完成后，作品保留原图和实况，可按设备教程下载并保存。公众号教程包含用原图创作、生成实拍图、复刻后转实况以及批量转换的操作演示。[Live 实况图文生成教程](https://mp.weixin.qq.com/s/F61afJBJkwgp1sP170vY3Q) · [实况图保存教程](https://hy.ithinkai.cn/tools/live-photo/save)
 
+#### 成品效果
+
+**扫地机器人 · 5 张**
+
+![扫地机器人实况图文成品，包含客厅、宠物互动和回充底座](assets/readme/live/robot-vacuum.jpg)
+
+**宝宝针织帽 · 4 张**
+
+![宝宝针织帽实况图文成品，包含帽子细节和佩戴效果](assets/readme/live/baby-hat.jpg)
+
+**球鞋穿搭 · 5 张**
+
+![球鞋穿搭实况图文成品，包含坐姿、站姿和鞋面近景](assets/readme/live/sneakers.jpg)
+
+#### Live 动态预览
+
+![三个 Live 成品同屏播放，依次展示扫地机器人、宝宝针织帽和球鞋穿搭](assets/readme/live/live-results.gif)
+
+[查看 Live 成品视频（MP4）](assets/readme/live/live-results.mp4) · [查看创作结果页录屏（MP4）](assets/readme/live/result-page-recordings.mp4)
+
 ---
 
 ## 从资料到整篇图文，接着完成发布
