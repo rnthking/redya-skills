@@ -13,6 +13,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
+import { registerLiveReviewTools } from './tools-live-review.js';
 
 const API_KEY = process.env.REDYA_API_KEY;
 const BASE_URL = (process.env.REDYA_BASE_URL || 'https://hy.ithinkai.cn').replace(/\/+$/, '');
@@ -81,7 +82,7 @@ async function run(fn) {
 
 const server = new McpServer({
   name: 'redya',
-  version: '1.0.0',
+  version: '1.1.0',
 });
 
 // ---------------------------------------------------------------------------
@@ -248,6 +249,8 @@ server.tool(
 // ---------------------------------------------------------------------------
 // 启动
 // ---------------------------------------------------------------------------
+
+registerLiveReviewTools(server, { callApi, run, API_KEY, BASE_URL });
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
