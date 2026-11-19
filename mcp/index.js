@@ -91,8 +91,19 @@ const server = new McpServer({
 
 server.tool(
   'generate_outline',
-  '生成一篇小红书图文的大纲(标题+正文+每页图片说明)。同步接口,通常几秒到1分钟返回(上限4分钟),消耗积分(默认2积分/次,失败自动退款)。返回的 record_id 是这篇图文的唯一标识,后续编辑/出图/查询都用它。普通模式只需 topic;商品图文(带货)模式必须传 product_id(先用 create_product 建档或用 list_products 查已有商品)。auto=true 表示大纲完成后立即整篇出图(异步),之后用 get_record 轮询;缺省 auto=false,可先用 update_outline 修改大纲,再调 generate_images 出图。',
+  '生成一篇小红书图文的大纲(标题+正文+每页图片说明)。同步接口,通常几秒到1分钟返回,服务端总上限5分钟(包含渠道切换),客户端等待上限6分钟。文本渠道按后台对应创作模式的当前顺序调用,明确的渠道失败会切换下一项,不因格式错误反复重写。消耗积分(默认2积分/次,生成成功后扣分)。返回的 record_id 是这篇图文的唯一标识,后续编辑/出图/查询都用它。普通模式只需 topic;商品图文(带货)模式必须传 product_id(先用 create_product 建档或用 list_products 查已有商品)。auto=true 表示大纲完成后立即整篇出图(异步),之后用 get_record 轮询;缺省 auto=false,可先用 update_outline 修改大纲,再调 generate_images 出图。',
   {
+    creation_mode: z.enum(['normal', 'product', 'viral_clone', 'live_photo']).optional().describe('普通、商品、复刻这篇、实况图文分别选用对应模式'),
+    live_settings: z.object({
+      sourceMode: z.enum(['upload', 'generate']),
+      withCopy: z.boolean().default(true),
+      mode: z.enum(['live', 'ai']).default('live'),
+      modelCode: z.string().optional(),
+      quality: z.string().optional(),
+      expectedPoints: z.number().int().nonnegative().optional(),
+    }).optional().describe('整篇实况设置，上传原图时通过 image_urls 传入本人素材'),
+    clone_mode: z.enum(['same_topic', 'new_topic']).optional().describe('同主题或换主题复刻'),
+    source_id: z.string().optional().describe('复刻必填，来自 create_source，状态须为 ready'),
     topic: z.string().describe('创作主题,必填。例如"三伏天养生茶推荐"'),
     style: z.string().optional().describe('风格代码,可选。缺省: 普通模式=xiaohongshu_2,带货模式=xiaohongshu_4'),
     prompt_length: z.enum(['short', 'long']).optional().describe('图片说明长短,short|long,默认 short'),
@@ -104,6 +115,10 @@ server.tool(
   async (args) =>
     run(() =>
       callApi('POST', '/openapi/v1/outlines', {
+        creation_mode: args.creation_mode,
+        live_settings: args.live_settings,
+        clone_mode: args.clone_mode,
+        source_id: args.source_id,
         topic: args.topic,
         style: args.style,
         prompt_length: args.prompt_length,
@@ -148,10 +163,10 @@ server.tool(
 
 server.tool(
   'generate_images',
-  '对已有大纲的记录整篇出图。异步接口:提交后立即返回 task_id,实际生成需1~5分钟,请用 get_record 每15~30秒轮询直到终态。积分在提交时预扣(默认5积分/张),提交或生成失败自动退款。商品图文必传 product_id(记录若之前出过商品图会自动继承)。对已完成(status=completed)的记录要整篇重出时传 force=true,否则返回409;partial(部分失败)可直接重出无需 force,或用 regenerate_page 补单页。请勿并发对同一 record 提交出图。',
+  '对已有大纲的记录整篇出图。异步接口:提交后立即返回 task_id,实际生成需1~5分钟,请用 get_record 每15~30秒轮询直到终态。积分在提交时预扣(默认5积分/张),提交或生成失败自动退款。商品图文继承大纲关联的商品。对已完成(status=completed)的记录要整篇重出时传 force=true,否则返回409;partial(部分失败)可直接重出无需 force,或用 regenerate_page 补单页。请勿并发对同一 record 提交出图。',
   {
     record_id: z.string().describe('记录 ID,必填'),
-    product_id: z.string().optional().describe('商品档案 ID,商品图文必传;之前出过商品图的记录会自动继承'),
+    product_id: z.string().optional().describe('商品档案 ID,缺省沿用大纲绑定的商品'),
     skill_id: z.string().optional().describe('带货 Skill ID,可选'),
     image_urls: z.array(z.string()).optional().describe('参考图 URL 数组,可选;缺省沿用大纲阶段的'),
     force: z.boolean().optional().describe('已完成的记录要整篇重出时传 true,默认 false'),
@@ -249,6 +264,38 @@ server.tool(
 // ---------------------------------------------------------------------------
 // 启动
 // ---------------------------------------------------------------------------
+
+server.tool(
+  'create_source',
+  '解析参考笔记的链接，消耗解析积分，返回 source_id。请确认用户希望解析此链接。',
+  { url: z.string().min(1).describe('用户提供的原笔记链接或整段分享口令，原样传入') },
+  async ({ url }) => run(() => callApi('POST', '/openapi/v1/sources', { url }))
+);
+
+server.tool(
+  'get_source',
+  '读取本人链接解析进度，ready 后可以开始逐页复刻。',
+  { source_id: z.string() },
+  async ({ source_id }) => run(() => callApi('GET', `/openapi/v1/sources/${encodeURIComponent(source_id)}`))
+);
+
+server.tool(
+  'live_creation_status', '读取整篇实况进度。完成后返回需要同一 Key 访问的 ZIP 路径。',
+  { record_id: z.string() },
+  async ({ record_id }) => run(() => callApi('GET', `/openapi/v1/live-photos/creations/${encodeURIComponent(record_id)}`))
+);
+
+server.tool(
+  'start_live_creation', '分步实况图文确认素材后，在原记录开始制作实况。',
+  { record_id: z.string() },
+  async ({ record_id }) => run(() => callApi('POST', `/openapi/v1/live-photos/creations/${encodeURIComponent(record_id)}`))
+);
+
+server.tool(
+  'prepare_publish', '打开本人已完成作品的平台发布流程。awaiting_browser 表示等待浏览器填入编辑器。',
+  { record_id: z.string(), platform: z.string().describe('目标平台，例如 xiaohongshu') },
+  async ({ record_id, platform }) => run(() => callApi('POST', `/openapi/v1/records/${encodeURIComponent(record_id)}/publish`, { platform }))
+);
 
 registerLiveReviewTools(server, { callApi, run, API_KEY, BASE_URL });
 

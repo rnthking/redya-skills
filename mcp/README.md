@@ -79,6 +79,9 @@ Cursor(`~/.cursor/mcp.json` 或项目 `.cursor/mcp.json`)以及其他支持 stdi
 | 工具 | 对应接口 | 说明 |
 |---|---|---|
 | `generate_outline` | `POST /openapi/v1/outlines` | 生成大纲(同步)。`topic` 必填;带货传 `product_id`;`auto=true` 则完成后直接排队出图 |
+| `create_source` / `get_source` | `POST /openapi/v1/sources` / `GET /openapi/v1/sources/{source_id}` | 解析分享口令，复刻时在大纲中指定 `viral_clone` 与原文编号 |
+| `start_live_creation` / `live_creation_status` | `POST / GET /openapi/v1/live-photos/creations/{record_id}` | 启动或查询整篇实况 |
+| `prepare_publish` | `POST /openapi/v1/records/{record_id}/publish` | 准备作品和平台编辑器，由用户确认发布 |
 | `update_outline` | `PUT /openapi/v1/outlines/{record_id}` | 编辑大纲。`pages` 整组覆盖(1~15页);生成中不可编辑(409) |
 | `generate_images` | `POST /openapi/v1/images` | 整篇出图(异步)。预扣积分,失败退款;重出已完成记录需 `force=true` |
 | `regenerate_page` | `POST /openapi/v1/images/regenerate` | 单页重生成(异步)。适合 `partial` 状态下补失败页 |
