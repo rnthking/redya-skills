@@ -32,6 +32,16 @@
 
 ---
 
+## 爆文复刻
+
+先调用 `POST /openapi/v1/sources` 解析小红书图文链接，轮询 `GET /openapi/v1/sources/:source_id` 至 `ready`。然后请求 `POST /openapi/v1/outlines`。
+
+```json
+{"creation_mode":"viral_clone","clone_mode":"same_topic","source_id":"替换为刚解析的ID","topic":"按原笔记的页序重新创作","auto":false}
+```
+
+同主题复刻使用 `same_topic`（默认），换主题使用 `new_topic` 并在 `topic` 写明新主题。最多 15 张原图。可在大纲阶段通过 `image_urls` 添加自己的主体素材（最多 10 张）。原笔记按页用于参考版式。默认使用网页版复刻模式下可处理参考图的模型。返回 `record_id`、`creation_mode`、`clone_mode` 和逐页大纲。确认后向 `POST /openapi/v1/images` 发送 `{"record_id":"上一步返回的ID"}`，通过 `GET /openapi/v1/records/:record_id` 查看结果。保留页序和页数编辑文案时，原图绑定会保留。只传 `source_id` 仍沿用原有参考改写行为。
+
 ## POST /openapi/v1/outlines — 生成大纲
 
 ```jsonc
