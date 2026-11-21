@@ -13,7 +13,7 @@
   - 402 `insufficient_points` 积分不足
   - 403 `forbidden` 访问他人资源
   - 404 `not_found`
-  - 409 `conflict`(生成中/已完成)
+  - 409 `conflict`：出图或大纲编辑冲突时，用原 record_id 查询 `GET /openapi/v1/records/:record_id`。编辑遭拒需核对实际保存的稿件，再决定是否生成。实况 UUID 参数冲突时，用原 request_id 查询 `GET /openapi/v1/live-photos/:request_id` 并核对原参数，不换 UUID、不强制重做。
   - 422 `invalid_request` 参数错误
   - 429 `quota_exceeded` 日配额用尽
   - 500 `internal_error` 服务端错误,可稍后重试一次
@@ -34,7 +34,11 @@
 
 ## 爆文复刻
 
-先调用 `POST /openapi/v1/sources` 解析小红书图文链接，轮询 `GET /openapi/v1/sources/:source_id` 至 `ready`。然后请求 `POST /openapi/v1/outlines`。
+向用户确认解析费用后调用 `POST /openapi/v1/sources` 解析小红书图文链接，轮询 `GET /openapi/v1/sources/:source_id` 至 `ready`。另行核实大纲或一步生成的本次报价，获得同意后请求 `POST /openapi/v1/outlines`。
+
+`images` 和 `video_url` 指向红鸦网页的私有素材代理。它与 OpenAPI 使用不同的凭据。网页路由 `/api/content-sources/{source_id}/media/{index}` 和 `/api/content-sources/{source_id}/video` 要求素材所属账号已授权的网页会话（请求头 `x-token`）；仅有 OpenAPI Key 时，请用户在红鸦已登录页面下载并把素材作为附件提供。不要向用户索要会话令牌。
+
+有相应授权的网页客户端可从同一红鸦 HTTPS 源读取该条素材。先校验源、路径和本次 source_id，禁止跟随携带凭据的重定向。确认响应成功且类型确为图片或视频，再保存文件并作为附件交付；匿名或会话失效时可能收到 HTTP 200 和 JSON 的未认证提示，不能当作媒体。不要把私有代理链接直接用作聊天图片，不把任何令牌放进 URL、聊天或附件。
 
 ```json
 {"creation_mode":"viral_clone","clone_mode":"same_topic","source_id":"替换为刚解析的ID","topic":"按原笔记的页序重新创作","auto":false}
