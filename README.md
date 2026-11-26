@@ -278,7 +278,7 @@
 
 ### 1. 获取自己的 API Key
 
-打开 **[红鸦 AI](https://hy.ithinkai.cn)**，登录后进入「红鸦 Skills」，创建自己的 API Key。
+打开 **[红鸦 AI 领 Key 页面](https://hy.ithinkai.cn/developer?skill_channel=github)**，登录后进入「红鸦 Skills」，创建自己的 API Key。
 
 ### 2. 让 Agent 安装，或手动安装
 
